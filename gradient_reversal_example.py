@@ -27,9 +27,42 @@ class ReverseLayerF(Function):
 class RandomNetworkWithReverseGrad(nn.Module):
     def __init__(self, **kwargs):
         super(RandomNetworkWithReverseGrad, self).__init__()
-        self.features = nn.Sequential(...)
-        self.classifier = nn.Sequential(...)
-        self.dann_classifier = nn.Sequential(...)
+        # adding conv parameters, took from AlexNet self.features = nn.Sequentia(etc.
+        self.features = nn.Sequential(
+        	nn.Conv2d(3, 64, kernel_size=11, stride=4, padding=2),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=3, stride=2),
+            nn.Conv2d(64, 192, kernel_size=5, padding=2),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=3, stride=2),
+            nn.Conv2d(192, 384, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(384, 256, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(256, 256, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=3, stride=2),
+        )
+        # adding fc parameters, took from AlexNet self.classifier = nn.Sequential( etc)
+        self.classifier = nn.Sequential(
+        	nn.Dropout(),
+            nn.Linear(256 * 6 * 6, 4096),
+            nn.ReLU(inplace=True),
+            nn.Dropout(),
+            nn.Linear(4096, 4096),
+            nn.ReLU(inplace=True),
+            nn.Linear(4096, num_classes),
+        )
+        # same architecture of AlexNet's FC but adding a new densely connected branch with 2 output neurons (TO FINISH)
+        self.dann_classifier = nn.Sequential(
+        	nn.Dropout(),
+            nn.Linear(256 * 6 * 6, 4096),
+            nn.ReLU(inplace=True),
+            nn.Dropout(),
+            nn.Linear(4096, 4096),
+            nn.ReLU(inplace=True),
+            nn.Linear(4096, num_classes),
+        )
 
     def forward(self, x, alpha=None):
         features = self.features
