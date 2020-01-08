@@ -55,6 +55,7 @@ class RandomNetworkWithReverseGrad(nn.Module):
             nn.Linear(4096, NUM_CLASSES),
         )
         # same architecture of AlexNet's FC but adding a new densely connected branch with 2 output neurons (TO FINISH)
+        self.avgpool = nn.AdaptiveAvgPool2d((6, 6))
         self.dann_classifier = nn.Sequential(
         	nn.Dropout(),
             nn.Linear(256 * 6 * 6, 4096),
@@ -67,16 +68,17 @@ class RandomNetworkWithReverseGrad(nn.Module):
 
     def forward(self, x, alpha=None):
         features = self.features(x);
+        features = self.avgpool(features)
         # Flatten the features:
         features = features.view(features.size(0), -1)
         # If we pass alpha, we can assume we are training the discriminator
         if alpha is not None:
             # gradient reversal layer (backward gradients will be reversed)
             reverse_feature = ReverseLayerF.apply(features, alpha)
-            discriminator_output = self.classifier(features);
+            discriminator_output = self.dann_classifier(features);
             return discriminator_output
         # If we don't pass alpha, we assume we are training with supervision
         else:
             # do something else
-            class_outputs = self.dann_classifier(features);
+            class_outputs = self.classifier(features);
             return class_outputs
