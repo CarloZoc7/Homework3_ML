@@ -66,10 +66,18 @@ class RandomNetworkWithReverseGrad(nn.Module):
             nn.Linear(4096, NUM_DOMAINS),
         )
 
+    def update(self):
+        self.domain_classifier[1].weight.data = self.classifier[1].weight.data
+        self.domain_classifier[1].bias.data = self.classifier[1].bias.data
+
+        self.domain_classifier[4].weight.data = self.classifier[4].weight.data
+        self.domain_classifier[4].bias.data = self.classifier[4].bias.data
+        
+
     def forward(self, x, alpha=None):
         features = self.features(x);
-        # Flatten the features:
-        features = features.view(features.size(0), -1)
+        features = self.avgpool(features)
+        features = torch.flatten(features, 1)
         # If we pass alpha, we can assume we are training the discriminator
         if alpha is not None:
             # gradient reversal layer (backward gradients will be reversed)
@@ -81,3 +89,16 @@ class RandomNetworkWithReverseGrad(nn.Module):
             # do something else
             class_outputs = self.classifier(features);
             return class_outputs
+
+    def DANN_AlexNet(pretrained=False, progress=True, **kwargs):
+        model = AlexNet(**kwargs)
+        if pretrained:
+            state_dict = load_state_dict_from_url(model_urls['alexnet'],
+                                                    progress = progress
+                                                    )
+            state_dict.popitem("classifier.6.weight")
+            state_dict.popitem("classifier.6.bias")
+
+            model.load_state_dict(state_dict, strict=False)
+            model.update()
+        return model
