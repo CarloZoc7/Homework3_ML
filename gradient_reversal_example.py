@@ -26,7 +26,7 @@ class ReverseLayerF(Function):
 
 class RandomNetworkWithReverseGrad(nn.Module):
     #def __init__(self, **kwargs):
-    def __init__(self, NUM_CLASSES=1000, NUM_DOMAINS=10)
+    def __init__(self, NUM_CLASSES=1000, NUM_DOMAINS=10):
         super(RandomNetworkWithReverseGrad, self).__init__()
         # adding conv parameters, took from AlexNet self.features = nn.Sequentia(etc.
         self.features = nn.Sequential(
