@@ -29,7 +29,7 @@ class ReverseLayerF(Function):
 
 class AlexNet(nn.Module):
 
-    def __init__(self, num_classes=1000, num_domains=5):
+    def __init__(self, num_classes=1000, num_domains=4):
         super(AlexNet, self).__init__()
         self.features = nn.Sequential(
             nn.Conv2d(3, 64, kernel_size=11, stride=4, padding=2),
@@ -63,7 +63,7 @@ class AlexNet(nn.Module):
             nn.Dropout(),
             nn.Linear(4096, 4096),
             nn.ReLU(inplace=True),
-            nn.Linear(4096, num_domains),
+            nn.Linear(4096, 4),
         )
 
     def forward(self, x, alpha=None):
