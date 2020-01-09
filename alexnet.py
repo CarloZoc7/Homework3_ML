@@ -56,7 +56,7 @@ class AlexNet(nn.Module):
             nn.ReLU(inplace=True),
             nn.Linear(4096, num_classes),
         )
-        self.dann_classifier = nn.Sequential(
+        self.domain_classifier = nn.Sequential(
             nn.Dropout(),
             nn.Linear(256 * 6 * 6, 4096),
             nn.ReLU(inplace=True),
@@ -74,7 +74,7 @@ class AlexNet(nn.Module):
         if alpha is not None:
             # gradient reversal layer (backward gradients will be reversed)
             reverse_feature = ReverseLayerF.apply(features, alpha)
-            discriminator_output = self.dann_classifier(features);
+            discriminator_output = self.domain_classifier(features);
             return discriminator_output
         # If we don't pass alpha, we assume we are training with supervision
         else:
