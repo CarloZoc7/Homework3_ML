@@ -29,7 +29,7 @@ class ReverseLayerF(Function):
 
 class AlexNet(nn.Module):
 
-    def __init__(self, num_classes=1000, num_domains=4):
+    def __init__(self, num_classes=1000, num_domains=5):
         super(AlexNet, self).__init__()
         self.features = nn.Sequential(
             nn.Conv2d(3, 64, kernel_size=11, stride=4, padding=2),
@@ -63,7 +63,7 @@ class AlexNet(nn.Module):
             nn.Dropout(),
             nn.Linear(4096, 4096),
             nn.ReLU(inplace=True),
-            nn.Linear(4096, 4),
+            nn.Linear(4096, num_domains),
         )
 
     def forward(self, x, alpha=None):
@@ -101,5 +101,10 @@ def dann_alexnet(pretrained=False, progress=True, **kwargs):
     if pretrained:
         state_dict = load_state_dict_from_url(model_urls['alexnet'],
                                               progress=progress)
-        model.load_state_dict(state_dict)
+        state_dict.popitem("classifier.6.bias")
+        state_dict.popitem("classifier.6.weight")
+
+
+        model.load_state_dict(state_dict, strict=False)
+        model.update()
     return model
