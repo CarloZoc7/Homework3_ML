@@ -94,7 +94,13 @@ class RandomNetworkWithReverseGrad(nn.Module):
             return class_outputs
 
     def DANN_AlexNet(pretrained=False, progress=True, **kwargs):
-        model = AlexNet(**kwargs)
+        r"""AlexNet model architecture from the
+        `"One weird trick..." <https://arxiv.org/abs/1404.5997>`_ paper.
+        Args:
+            pretrained (bool): If True, returns a model pre-trained on ImageNet
+            progress (bool): If True, displays a progress bar of the download to stderr
+    """
+        model = RandomNetworkWithReverseGrad(**kwargs)
         if pretrained:
             state_dict = load_state_dict_from_url(model_urls['alexnet'],
                                                     progress = progress
